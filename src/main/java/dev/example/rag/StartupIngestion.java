@@ -26,18 +26,25 @@ public class StartupIngestion {
     private final EmbeddingModel embeddingModel;
     private final String sourceUrl;
     private final int paragraphsPerChunk;
+    private final boolean enabled;
 
     public StartupIngestion(EmbeddingStore<TextSegment> store,
                             EmbeddingModel embeddingModel,
                             @ConfigProperty(name = "rag.source.url") String sourceUrl,
-                            @ConfigProperty(name = "rag.chunk.paragraphs", defaultValue = "8") int paragraphsPerChunk) {
+                            @ConfigProperty(name = "rag.chunk.paragraphs", defaultValue = "8") int paragraphsPerChunk,
+                            @ConfigProperty(name = "rag.ingest.enabled", defaultValue = "true") boolean enabled) {
         this.store = store;
         this.embeddingModel = embeddingModel;
         this.sourceUrl = sourceUrl;
         this.paragraphsPerChunk = paragraphsPerChunk;
+        this.enabled = enabled;
     }
 
     void onStart(@Observes StartupEvent ev) {
+        if (!enabled) {
+            Log.info("Startup ingestion disabled via rag.ingest.enabled=false");
+            return;
+        }
         try {
             Log.infof("Fetching source document from %s", sourceUrl);
             String body = fetch(sourceUrl);
