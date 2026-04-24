@@ -17,7 +17,7 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 
-@Path("/ask")
+@Path("/")
 public class AskResource {
 
     private final EmbeddingStore<TextSegment> store;
